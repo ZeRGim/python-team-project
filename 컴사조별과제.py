@@ -639,6 +639,80 @@ def roulette():
     else:
         print("잘가!") # 1 외에 반환
         return
+def taja():
+    f=open("moonjang.txt", "r", encoding='UTF8')
+    lines=[]
+    while True:
+        line=f.readline().strip()
+        lines.append(line)
+        if not line: break
+    f.close()
+    cnt=0
+    ta=0
+    fcnt=0
+    ota=0
+    qwe=0
+    start=time.time()
+    for i in range(len(lines)):
+        rdline=random.randrange(0,len(lines))
+        print(lines[rdline])
+        ans=input()
+        for i in range(len(lines[rdline])):
+            try:
+                if lines[rdline][i] != ans[i]:
+                    ota += 1
+            except:
+                remain=lines[rdline][i:]
+                ota += len(remain)
+                break
+        if lines[rdline] == ans:
+            cnt += 1
+            print("ok")
+            ta += len(ans)
+        else:
+            print("no")
+            fcnt += 1
+            ta += len(ans)
+        lines.remove(lines[rdline])
+        anli=tasucal(ans)
+        for i in anli:
+            if i == [' ']:
+                qwe += 1
+                continue
+            try:
+                i.remove(' ')
+            except:
+                pass
+            qwe += len(i)
+        if cnt == 1: break
+    end=time.time()
+    record=end-start
+    tasu=int((qwe/record)*60)
+    acc=((ta-ota)/ta)*100
+    print(f"당신의 기록 {record:.1f}초\n당신의 타수 {tasu}타\n당신의 정확도 {acc:.1f}%")
+    tempexp=int(tasu/10*acc/100)
+    exp(tempexp)
+def tasucal(word):
+    # 초성 리스트. 00 ~ 18
+    CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
+    # 중성 리스트. 00 ~ 20
+    JUNGSUNG_LIST = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ']
+    # 종성 리스트. 00 ~ 27 + 1(1개 없음)
+    JONGSUNG_LIST = [' ', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
+
+    r_lst = []
+    for w in list(word.strip()):
+        ## 영어인 경우 구분해서 작성함. 
+        if '가'<=w<='힣':
+            ## 588개 마다 초성이 바뀜. 
+            ch1 = (ord(w) - ord('가'))//588
+            ## 중성은 총 28가지 종류
+            ch2 = ((ord(w) - ord('가')) - (588*ch1)) // 28
+            ch3 = (ord(w) - ord('가')) - (588*ch1) - 28*ch2
+            r_lst.append([CHOSUNG_LIST[ch1], JUNGSUNG_LIST[ch2], JONGSUNG_LIST[ch3]])
+        else:
+            r_lst.append([w])
+    return r_lst
 #메인함수 영역
 idpw={} #최초 실행을 위한 빈 딕셔너리
 idstat={}
@@ -669,7 +743,7 @@ set_art = """
     ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
     
     
-     1. 내 정보   2. 비밀번호 변경  3. 닉네임 변경    4.업적 설정
+     1. 내 정보   2. 비밀번호 변경  3. 닉네임 변경    4.칭호 설정
      
      5. 로그아웃  6. 계정삭제  7.종료
        """
@@ -786,7 +860,7 @@ while True:
                         break
                     if "업다운" in gamemenu or "벅샷" in gamemenu or "룰렛" in gamemenu or "하이로우" in gamemenu \
                         or "야구" in gamemenu or"랭킹" in gamemenu or "1" in gamemenu or "2" in gamemenu or "3" in gamemenu\
-                            or "4" in gamemenu or "5" in gamemenu:
+                            or "4" in gamemenu or "5" in gamemenu or "타자" in gamemenu or "6" in gamemenu:
                         break
                     else:
                         print("지원하지 않는 게임입니다.")
@@ -861,6 +935,21 @@ while True:
                             break #메인으로 가기위한 break
                         elif roulsel == '2':
                             print("룰렛은 지정하신 번호가 나오면 당첨하는 간단한 게임입니다.")
+                        else:
+                            print("메인메뉴로 돌아갑니다.")
+                            time.sleep(0.5)
+                            break
+                elif "6" in gamemenu or "타자" in gamemenu:
+                    time.sleep(0.5)
+                    print("타자연습에 오신 것을 환영합니다.")
+                    time.sleep(0.5)
+                    while True: #무한루프
+                        tajasel=input("1. 시작하기\n2. 설명듣기\n3. 나가기\n") #선택변수
+                        if tajasel == '1':
+                            taja() #룰렛함수로 이동
+                            break #메인으로 가기위한 break
+                        elif tajasel == '2':
+                            print("타자연습 게임입니다.")
                         else:
                             print("메인메뉴로 돌아갑니다.")
                             time.sleep(0.5)
