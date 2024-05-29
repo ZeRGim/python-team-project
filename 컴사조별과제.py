@@ -106,16 +106,20 @@ def achmap(item): #업적을 예쁘게 출력하기 위한 함수
   return item[0] + ": " + ox #키값과 if문에서 설정된 ox를 붙여서 반환
 
 def allclear(): #설정된 업적을 모두 달성했는지 검증
-    if idstat[now_login]['achieve'] == False: #최초 1회만 작동하게 하기위해 달성여부 검증
+    if 'allclear' not in idstat[now_login]['achieve'].keys(): #최초 1회만 작동하게 하기위해 달성여부 검증
         cnt=0
         for i in idstat[now_login]['achieve'].values():
             if i == False: #achieve 딕셔너리에 False개수 카운트
                 cnt += 1
         if cnt == 0: #False 개수가 0개이면 업적을 모두 달성했다고 판단.
             print("모든 업적 클리어 !!")
-            idstat[now_login]['title'].append("Perfect") #칭호추가
+            temp=input("직접 칭호를 만들어보세요!\n!한번 설정하면 변경할 수 없습니다.\n")
+            idstat[now_login]['title'].append(temp) #칭호추가
             idstat[now_login]['achieve']['allclear']=True #업적추가
-
+            print(f"커스텀 칭호 : {temp} 획득!!")
+def test_allclear():
+    for i in idstat[now_login]['achieve'].keys():
+        idstat[now_login]['achieve'][i]=True
 def change_password():
     checkpw=input("현재 비밀번호 : ")
     if checkpw == idpw[now_login]: #비밀번호 검증
@@ -241,9 +245,10 @@ def randomgame(): #업다운 게임함수
                             
                             resel=input("""
 1. 다시하기
-                                  2. 나가기\n""")
+2. 나가기\n""")
                             if resel == '1':
                                 randomgame()
+                                return
                             else:
                                 return
                     except:
@@ -253,9 +258,10 @@ def randomgame(): #업다운 게임함수
                     exp(1)
                     resel=input("""
 1. 다시하기
-                                2. 나가기\n""")
+2. 나가기\n""")
                     if resel == '1':
                         randomgame()
+                        return
                     else:
                         return
         elif sel == '2':
@@ -433,14 +439,18 @@ def baseballgame(): #야구게임 함수
         num.remove(num[numran]) #num에서 제거 (중복 숫자 방지)
     print(ans) #test용 정답출력 // 최종에서 삭제할것
     print("포기하려면 포기 입력")
+    print("4자리 수를 골라줘!\n")
     while True:
         print("%d번째 시도"%cnt)
-        enter_num=input("4자리 수를 골라줘!\n")
+        enter_num=input()
         if "포기" in enter_num: #포기용
             return
-        enter_num_li=list(str(enter_num)) #입력된 수를 
+        enter_num_li=list(str(enter_num)) #입력된 수를
         strike=0
         ball=0
+        if len(enter_num_li) != 4:
+            print("4자리수를 입력해줘")
+            continue
         for i in range(4):
             try:
                 if int(enter_num_li[i])== ans[i]:
@@ -448,8 +458,8 @@ def baseballgame(): #야구게임 함수
                 elif int(enter_num_li[i]) in ans:
                     ball += 1
             except:
-                print("4자리수를 입력해줘 !")
-                continue
+                print("수를 입력해줘 !")
+                break
             
         if strike == 4: #정답감지
             print("정답!!")
@@ -461,8 +471,8 @@ def baseballgame(): #야구게임 함수
                     print("업적클리어 : 빠른 클리어")
                     idstat[now_login]['achieve']["빠른 클리어(야구게임에서 5번 시도 내 클리어)"]=True
                     time.sleep(0.5)
-                    print("칭호 획득 : 야구광")
-                    idstat[now_login]['title'].append("야구광")
+                    print("칭호 획득 : 메이저리거")
+                    idstat[now_login]['title'].append("메이저리거")
             return
         if strike == 0 and ball == 0:
             print("노볼 노스트라이크!")
@@ -493,9 +503,9 @@ def highlow(): #하이로우 게임함수
                 print("업적달성 : 뭘해도")
                 time.sleep(0.5)
                 idstat[now_login]["achieve"]["뭘해도(하이로우에서 하이, 로우, 미들 전부 승리)"] = True
-                print("칭호획득 : HLM")
+                print("칭호획득 : Victory")
                 time.sleep(0.5)
-                idstat[now_login]['title'].append("HLM")
+                idstat[now_login]['title'].append("Victory")
         hcho=input("1.하이\n2.미들\n3.로우\n\n나가려면 아무거나 입력해!\n") #종목선택
         dealer=random.randrange(1,101) 
         me=random.randrange(1,101) #상대와 나의 수 랜덤설정
@@ -565,6 +575,7 @@ def roulette():
     print("룰렛을 시작할게 !")
     chonum=[] #나의 선택 빈 리스트
     ans=random.randint(1,36) #정답설정
+    print(ans)
     cho=input('''어디에 걸래?
               1. 홀수 (경험치3)
               2. 짝수 (경험치3)
@@ -650,9 +661,7 @@ main_art="""
       메인화면                               %s  %s님
     ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 
-    
-    
-    
+
 """
 set_art = """
     ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
@@ -681,9 +690,6 @@ game_art="""
     ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿    
     
     
-    
-    
-    
 """
 
         
@@ -694,14 +700,14 @@ while True:
         while True:
             print(login_art)
             loginmenu=input()
-            if loginmenu=='1': #선택에 따라 로그인 회원가입 종료
+            if loginmenu=='1' or loginmenu == '로그인': #선택에 따라 로그인 회원가입 종료
                 login()
                 time.sleep(0.5)
                 break
-            elif loginmenu=='2':
+            elif loginmenu=='2' or loginmenu == '회원가입':
                 register()
                 time.sleep(0.5)
-            elif loginmenu == '3':
+            elif loginmenu == '3' or loginmenu == '종료':
                 sys.exit("프로그램을 종료합니다.")
             else:
                 print("올바른 메뉴를 골라주세요.")
@@ -714,16 +720,18 @@ while True:
         ach_="\n\t   ".join(list(map(achmap, idstat[now_login]['achieve'].items()))) #업적표시용 변수
         print(main_art%(idstat[now_login]["now_title"], idstat[now_login]['nick'])) #화면에 칭호와 닉네임 출력
         print('''
-            1. 설정
-            2. 검색
-            3. 게임''')
+1. 설정
+2. 검색
+3. 게임
+4. 랭킹''')
         while True: #무한루프
             mainmenu=input()
-            if "설정" in mainmenu or "게임" in mainmenu or "검색" in mainmenu or "랭킹" in mainmenu: #메뉴검증
+            if "설정" in mainmenu or "게임" in mainmenu or "검색" in mainmenu or "랭킹" in mainmenu or\
+                "1" in mainmenu or "2" in mainmenu or "3" in mainmenu or "4" in mainmenu or "test" in mainmenu: #메뉴검증
                 break #올바른 메뉴 선택이 메뉴선택 반복문 벗어남
             else:
                 print("잘 모르겠어요")
-        if "설정" in mainmenu:
+        if "설정" in mainmenu or "1" in mainmenu:
             print(set_art%(idstat[now_login]["now_title"], idstat[now_login]['nick']))
             setmenu=input()
             if setmenu == '1':
@@ -749,11 +757,13 @@ while True:
                 print("DB초기화")
             else:
                 a=1
-        elif "검색" in mainmenu:
+        elif "올클" in mainmenu:
+            test_allclear()
+        elif "검색" in mainmenu or "2" in mainmenu:
             pass
-        elif "랭킹" in mainmenu:
+        elif "랭킹" in mainmenu or "4" in mainmenu:
             ranking()
-        elif "게임" in mainmenu:
+        elif "게임" in mainmenu or "3" in mainmenu:
             print(game_art%(idstat[now_login]["now_title"], idstat[now_login]['nick']))
             time.sleep(0.7)
             print("게임파트에 온 걸 환영해!")
@@ -762,6 +772,10 @@ while True:
             time.sleep(0.7)
             print("메인화면으로 돌아가려면 나가기를 입력해줘!")
             while True:
+                saving_data() #데이터 저장
+                loading_data() #로드
+                levelup() #레벨업 검증
+                allclear() #업적 올클리어 검증
                 time.sleep(1)
                 print(game_art%(idstat[now_login]["now_title"], idstat[now_login]['nick']))
                 for i in range(len(gamelist)):
@@ -770,23 +784,73 @@ while True:
                     gamemenu=input()
                     if "나가" in gamemenu:
                         break
-                    if "업다운" in gamemenu or "벅샷" in gamemenu or "룰렛" in gamemenu or "하이로우" in gamemenu or "야구" in gamemenu or"랭킹" in gamemenu:
+                    if "업다운" in gamemenu or "벅샷" in gamemenu or "룰렛" in gamemenu or "하이로우" in gamemenu \
+                        or "야구" in gamemenu or"랭킹" in gamemenu or "1" in gamemenu or "2" in gamemenu or "3" in gamemenu\
+                            or "4" in gamemenu or "5" in gamemenu:
                         break
                     else:
                         print("지원하지 않는 게임입니다.")
                 if "나가" in gamemenu:
                     break
-                if "업다운" in gamemenu:
+                if "업다운" in gamemenu or "1" in gamemenu:
                     randomgame()
                 elif "ex" in gamemenu: #test용 경험치지급 // 최종삭제
                     idstat[now_login]['exp'] += 3
-                elif "벅샷" in gamemenu:
-                    buckshot()
-                elif "야구" in gamemenu:
-                    baseballgame()
-                elif "하이로우" in gamemenu:
+                elif "벅샷" in gamemenu or "2" in gamemenu:
+                    time.sleep(0.5)
+                    print("벅샷룰렛에 오신 것을 환영합니다.")
+                    time.sleep(0.5)
+                    while True: #무한루프
+                        bucksel=input("1. 벅샷룰렛 시작하기\n2. 벅샷룰렛 설명듣기\n3. 나가기\n") #선택변수
+                        if bucksel == '1':
+                            buckshot() #룰렛함수로 이동
+                            break #메인으로 가기위한 break
+                        elif bucksel == '2':
+                            time.sleep(0.7)
+                            print("벅샷 룰렛은 죽음의 룰렛게임 입니다!")
+                            time.sleep(0.7)
+                            print("한 탄창은 3개에서 6개가 랜덤하게 설정됩니다.")
+                            time.sleep(0.7)
+                            print("탄창에는 공포탄 혹은 실탄이 들어갑니다.")
+                            time.sleep(0.7)
+                            print("실탄이라고 생각하면 적에게, 공포탄이라고 생각하면 스스로 쏴보세요!")
+                            time.sleep(0.7)
+                            print("스스로 공포탄을 쏜다면 계속해서 턴을 유지합니다!!")
+                            time.sleep(0.7)
+                            print("물론 선택의 책임은 오로지 본인에게 있습니다..")
+                            time.sleep(0.7)
+                            print("적이 나를 죽이기 전에 적을 죽여버리세요!")
+                            time.sleep(0.7)
+                            print("그럼 행운을 빕니다....")
+                        else:
+                            print("메인메뉴로 돌아갑니다.")
+                            time.sleep(0.5)
+                            break
+                elif "야구" in gamemenu or "3" in gamemenu:
+                    time.sleep(0.5)
+                    print("야구게임에 오신 것을 환영합니다.")
+                    time.sleep(0.5)
+                    while True: #무한루프
+                        yasel=input("1. 시작하기\n2. 설명듣기\n3. 나가기\n") #선택변수
+                        if yasel == '1':
+                            baseballgame() #룰렛함수로 이동
+                            break #메인으로 가기위한 break
+                        elif yasel == '2':
+                            print("야구게임은 랜덤한 4자리 수를 맞추는 게임입니다")
+                            time.sleep(0.7)
+                            print("그 수가 정답에 있다면 볼, 위치까지 맞다면 스트라이크입니다")
+                            time.sleep(0.7)
+                            print("예를 들어 정답이 1234일 경우 3456은 2볼 0스트라이크입니다.")
+                            time.sleep(0.7)
+                            print("1324라면 2볼 2스트라이크겠죠!")
+                            time.sleep(0.7)
+                        else:
+                            print("메인메뉴로 돌아갑니다.")
+                            time.sleep(0.5)
+                            break
+                elif "하이로우" in gamemenu or "4" in gamemenu:
                     highlow()
-                elif "룰렛" in gamemenu:
+                elif "룰렛" in gamemenu or "5" in gamemenu:
                     time.sleep(0.5)
                     print("룰렛에 오신 것을 환영합니다.")
                     time.sleep(0.5)
@@ -801,5 +865,5 @@ while True:
                             print("메인메뉴로 돌아갑니다.")
                             time.sleep(0.5)
                             break
-                elif "랭킹" in mainmenu:
+                elif "랭킹" in gamemenu:
                     ranking()
