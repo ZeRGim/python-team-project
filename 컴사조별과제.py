@@ -48,7 +48,7 @@ def login():
     if enter_id == "regi":
         return register() #regi입력시 아이디생성으로 이동
     enter_pw=input("비밀번호 : ") #비밀번호입력
-    if enter_id not in idpw: #idpw 딕셔너리에 id 존재검증
+    if enter_id not in idpw.keys(): #idpw 딕셔너리에 id 존재검증
 
         print("존재하지 않는 아이디 입니다. 회원가입하시려면 regi를 입력해주세요.")
         time.sleep(0.4)
@@ -176,7 +176,7 @@ def loading_data(): #데이터를 로딩하기 위한 함수
         idstat = pickle.load(f)
     with open('idpw.pickle', 'rb') as f:
         idpw = pickle.load(f)
-def ranking(): #고침 시발 할렐루야
+def ranking():
     texp=[] #total exp
     users=[] #임시적인 유저저장 (id)
     ranku=[] #정렬된 유저닉네임
@@ -225,7 +225,7 @@ def randomgame(): #업다운 게임함수
                             remain_chance -= 1
                         elif enter_su < random_su: #정답이 더 클때 up출력
                             print("up")
-                            remain_chance -= 1 #이후 남은기회 1차감
+                            remain_chance -= 1 #이후 남은기회 1차감ㅌ``
                         else:
                             print("정답!") #같을 때 정답
                             exp(3) #경험치 3지급
@@ -639,59 +639,59 @@ def roulette():
     else:
         print("잘가!") # 1 외에 반환
         return
-def taja():
-    f=open("moonjang.txt", "r", encoding='UTF8')
-    lines=[]
+def taja(): #타자게임함수
+    f=open("moonjang.txt", "r", encoding='UTF8') #문장들이 담긴 파일오픈
+    lines=[] #strip된 문장받을 리스트
     while True:
-        line=f.readline().strip()
-        lines.append(line)
-        if not line: break
-    f.close()
+        line=f.readline().strip() #문장 strip
+        lines.append(line) #lines 에 어펜드
+        if not line: break #문장이 없으면 브레이크
+    f.close() #파일클로즈
     cnt=0
     ta=0
     fcnt=0
     ota=0
-    qwe=0
-    start=time.time()
+    realta=0
+    start=time.time() #시간측정 시작
     for i in range(len(lines)):
-        rdline=random.randrange(0,len(lines))
-        print(lines[rdline])
-        ans=input()
-        for i in range(len(lines[rdline])):
-            try:
-                if lines[rdline][i] != ans[i]:
+        rdline=random.randrange(0,len(lines)) #rdline으로 랜덤으로 숫자설정
+        print(lines[rdline]) #랜덤숫자 인덱스에 해당하는 문장 출력
+        ans=input() #정답입력
+        for i in range(len(lines[rdline])): #오타세기 반복문
+            try: #인덱스에러 방지용
+                if lines[rdline][i] != ans[i]: #정답과 입력값의 동일 인덱스가 다른지 검증
                     ota += 1
             except:
-                remain=lines[rdline][i:]
+                remain=lines[rdline][i:] #입력값이 짧다면 그 뒤를 전부 오답처리
                 ota += len(remain)
-                break
-        if lines[rdline] == ans:
+                break #오타세기 반복문 종료
+        if lines[rdline] == ans: #정답과 일치한지 확인
             cnt += 1
             print("ok")
-            ta += len(ans)
+            ta += len(ans) #글자수 가산
         else:
             print("no")
             fcnt += 1
-            ta += len(ans)
-        lines.remove(lines[rdline])
-        anli=tasucal(ans)
+            ta += len(ans) #글자수 가산
+        lines.remove(lines[rdline]) #똑같은 문장 안나오게 리스트에서 제거
+        anli=tasucal(ans) #입력받은 ans를 초중종성으로 나누어 리스트화
         for i in anli:
-            if i == [' ']:
-                qwe += 1
+            if i == [' ']: #띄어쓰기를 1타로 계산
+                realta += 1
                 continue
             try:
-                i.remove(' ')
+                i.remove(' ') #종장이 없다면 제거 (거짓타수 제거)
             except:
-                pass
-            qwe += len(i)
-        if cnt == 1: break
-    end=time.time()
-    record=end-start
-    tasu=int((qwe/record)*60)
-    acc=((ta-ota)/ta)*100
+                pass #종장이 있으면 패스
+            realta += len(i)
+        if cnt == 1: break #설정한 카운트만큼 맞추면 종료
+    end=time.time() #시간측정 종료
+    record=end-start #소요시간
+    tasu=int((realta/record)*60) #타수
+    acc=((ta-ota)/ta)*100 #정확도
     print(f"당신의 기록 {record:.1f}초\n당신의 타수 {tasu}타\n당신의 정확도 {acc:.1f}%")
-    tempexp=int(tasu/10*acc/100)
-    exp(tempexp)
+    tempexp=int(tasu/10*acc/100) #경험치지급식
+    exp(tempexp) #경험치 지급
 def tasucal(word):
     # 초성 리스트. 00 ~ 18
     CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ']
@@ -807,7 +807,7 @@ while True:
                 print("잘 모르겠어요")
         if "설정" in mainmenu or "1" in mainmenu:
             print(set_art%(idstat[now_login]["now_title"], idstat[now_login]['nick']))
-            setmenu=input()
+            setmenu=input("돌아가시려면 아무거나 입력하세요\n")
             if setmenu == '1':
                 print(stat_art.format(idstat[now_login]["now_title"],idstat[now_login]['nick'],idstat[now_login]['Lv'],idstat[now_login]['exp'],need_exp,ach_))
                 choo = input("돌아가시려면 아무거나 입력하세요\n")
@@ -830,7 +830,7 @@ while True:
                 now_login=''
                 print("DB초기화")
             else:
-                a=1
+                pass
         elif "올클" in mainmenu:
             test_allclear()
         elif "검색" in mainmenu or "2" in mainmenu:
