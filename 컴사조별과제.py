@@ -2,6 +2,10 @@ import time
 import sys
 import random
 import pickle
+import pygame
+from pygame import mixer
+pygame.mixer.init()
+
 def register():
     global idpw
     global idstat
@@ -97,6 +101,75 @@ def logout():
     global now_login
     now_login='' #현재로그인 정보를 공백으로 비움.
     print("로그아웃")
+    
+def Music():
+    global now_play
+    global playing_music
+    while True:
+        Album = {"킁":['원래 난 이랬나','포커페이스'],"12":['Break','Dali,Van,Picasso']}
+        cnt=1    
+        for key in Album.keys():
+            
+            print(f"{cnt} : {key}")
+            cnt += 1
+        Album = {"킁":['원래 난 이랬나','포커페이스'],"1":['원래 난 이랬나','포커페이스'],"12":['Break','Dali,Van,Picasso'],"2":['Break','Dali,Van,Picasso']}
+        print("멈추려면 종료, 나가려면 아무거나 입력하세요.")
+        album = input('앨범명 입력 : ')
+        try:
+            Song = Album.get(album)
+
+            for i in range(len(Song)):
+                print(f"{i+1} : {Song[i]}") 
+        except:
+            pass    
+        if album == '킁' or album == '1':
+            print('\n')
+            Music_num = input()
+            if Music_num == '1'or Music_num =='원래 난 이랬나':
+                try:
+                    pygame.mixer.Sound.stop(now_play)
+                except:
+                    pass
+                킁1 = pygame.mixer.Sound( "원래난이랬나.wav" )
+                pygame.mixer.Sound.play(킁1)
+                now_play = 킁1
+                playing_music = "킁-원래 난 이랬나"
+
+            elif Music_num == '2'or Music_num == '포커페이스':
+                try:
+                    pygame.mixer.Sound.stop(now_play)
+                except:
+                    pass
+                킁2 = pygame.mixer.Sound( "포커페이스.wav" )
+                pygame.mixer.Sound.play(킁2)
+                now_play = 킁2
+                playing_music = "킁-포커페이스"
+        elif album =='12' or album == '2':
+            print('\n')
+            Music_num = input()
+            if Music_num == '1'or Music_num =='Break':
+                try:
+                    pygame.mixer.Sound.stop(now_play)
+                except:
+                    pass
+                tlqdl1 = pygame.mixer.Sound( "Break.wav" )
+                pygame.mixer.Sound.play(tlqdl1)
+                now_play = tlqdl1
+                playing_music = "12-Break"
+            elif Music_num == '2'or Music_num == 'Dali, Van, Picasso':
+                try:
+                    pygame.mixer.Sound.stop(now_play)
+                except:
+                    pass
+                tlqdl2 = pygame.mixer.Sound( "Dali, Van, Picasso.wav" )
+                pygame.mixer.Sound.play(tlqdl2)
+                now_play = tlqdl2
+                playing_music = "12-Dali, Van, Picasso"
+        elif album == '종료':
+            pygame.mixer.Sound.stop(now_play)
+        else:
+            return
+        
     
 def achmap(item): #업적을 예쁘게 출력하기 위한 함수
   if item[1] == True: #업적 딕셔너리를 아이템으로 불러와 value값이 True일때 O를 출력
@@ -702,7 +775,7 @@ def tasucal(word):
 
     r_lst = []
     for w in list(word.strip()):
-        ## 영어인 경우 구분해서 작성함. 
+        ## 한글이 아닌 경우 구분해서 작성함. 
         if '가'<=w<='힣':
             ## 588개 마다 초성이 바뀜. 
             ch1 = (ord(w) - ord('가'))//588
@@ -717,8 +790,10 @@ def tasucal(word):
 idpw={} #최초 실행을 위한 빈 딕셔너리
 idstat={}
 now_login='' 
+now_play=''
+playing_music=''
 loading_data() #데이터 인식후 딕셔너리 채움
-gamelist=["업다운 숫자맞추기", "벅샷룰렛","야구게임", "하이로우","룰렛"]
+gamelist=["업다운 숫자맞추기", "벅샷룰렛","야구게임", "하이로우","룰렛", "타자연습"]
 #_art는 사용자에게 시각적 안내용 아트
 login_art = """
     ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
@@ -755,7 +830,6 @@ stat_art = """
     레벨 : {}
     경험치 : {}  /  {}
     업적 : {}
-    최근 검색 기록 : 
        """
 
 game_art="""
@@ -763,7 +837,14 @@ game_art="""
       게임화면                               %s  %s님
     ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿    
     
-    
+
+"""
+music_art="""
+    ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
+      음악화면                               %s  %s님
+    ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿    
+
+    현재 실행중인 음악 : %s
 """
 
         
@@ -795,7 +876,7 @@ while True:
         print(main_art%(idstat[now_login]["now_title"], idstat[now_login]['nick'])) #화면에 칭호와 닉네임 출력
         print('''
 1. 설정
-2. 검색
+2. 음악
 3. 게임
 4. 랭킹''')
         while True: #무한루프
@@ -833,16 +914,15 @@ while True:
                 pass
         elif "올클" in mainmenu:
             test_allclear()
-        elif "검색" in mainmenu or "2" in mainmenu:
-            pass
+        elif "음악" in mainmenu or "2" in mainmenu:
+            print(music_art%(idstat[now_login]["now_title"], idstat[now_login]['nick'], playing_music))
+            Music()
         elif "랭킹" in mainmenu or "4" in mainmenu:
             ranking()
         elif "게임" in mainmenu or "3" in mainmenu:
             print(game_art%(idstat[now_login]["now_title"], idstat[now_login]['nick']))
             time.sleep(0.7)
             print("게임파트에 온 걸 환영해!")
-            time.sleep(0.7)
-            print("할 수 있는 게임이 궁금하다면 도움말을 입력해봐!")
             time.sleep(0.7)
             print("메인화면으로 돌아가려면 나가기를 입력해줘!")
             while True:
